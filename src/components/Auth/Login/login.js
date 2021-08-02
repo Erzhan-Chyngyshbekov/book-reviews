@@ -13,38 +13,9 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-
-// import AppBar from "@material-ui/core/AppBar";
-// import MenuBar from '../../MenuBar/index';
+import { authContext } from "../../../Contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
-  //     paper: {
-  //         marginTop: theme.spacing(8),
-  //         display: "flex",
-  //         flexDirection: "column",
-  //         alignItems: "center",
-  //     },
-  //     avatar: {
-  //         margin: theme.spacing(1),
-  //         backgroundColor: theme.palette.secondary.main,
-  //     },
-  //     form: {
-  //         width: "100%", // Fix IE 11 issue.
-  //         marginTop: theme.spacing(1),
-  //         color: "white",
-  //     },
-  //     submit: {
-  //         margin: theme.spacing(3, 0, 2),
-  //     },
-  // }));
-
-  // export default function SignIn() {
-  //     const history = useHistory();
-  //     const initialFormData = Object.freeze({
-  //         email: "",
-  //         password: "",
-  //     });
-
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
@@ -83,6 +54,12 @@ export default function Login() {
     password: "",
   });
 
+  const { users, login, fetchUsers } = useContext(authContext);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   const [formData, updateFormData] = useState(initialFormData);
 
   const handleChange = (e) => {
@@ -94,26 +71,16 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (users.find((user) => user.email == formData.email)) {
+    } else {
+      alert("Неправильный логин или пароль!");
+      return;
+    }
+
     console.log(formData);
-
-    axiosInstance
-      .post(`accounts/login/`, {
-        email: formData.email,
-        password: formData.password,
-      })
-      .then((res) => {
-        console.log(res);
-
-        localStorage.setItem("access_token", res.data.access);
-        localStorage.setItem("refresh_token", res.data.refresh);
-        axiosInstance.defaults.headers["Authorization"] =
-          "JWT " + localStorage.getItem("access_token");
-        localStorage.setItem("account", res.data.email);
-        history.push("/");
-
-        console.log(res.data);
-        // console.log(res.data);
-      });
+    login(formData.email, formData.password);
+    history.push("/");
   };
 
   const classes = useStyles();
@@ -127,7 +94,7 @@ export default function Login() {
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}></Avatar>
-        <Typography style={{ color: "white" }} component="h1" variant="h5">
+        <Typography component="h1" variant="h5">
           Войти
         </Typography>
         <form className={classes.form} noValidate>
@@ -157,16 +124,11 @@ export default function Login() {
             autoComplete="current-password"
             onChange={handleChange}
           />
-          <FormControlLabel
-            control={
-              <Checkbox
-                style={{ backgroundColor: "white", margin: "10px" }}
-                value="remember"
-                color="primary"
-              />
-            }
-            label="Запомнить меня"
-          />
+
+          {/* <Typography style={{ color: "red" }} component="p" variant="p">
+            Неправильный логин или пароль!
+          </Typography> */}
+
           <Button
             type="submit"
             fullWidth

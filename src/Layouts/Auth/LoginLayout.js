@@ -56,7 +56,10 @@ export default function LoginLayout(props) {
             <Typography className={classes.logo}>
               <MenuBar className={classes.burgerMenu} />
               <Link to="/">
-                <MenuBookIcon className={classes.menuBookIcon} fontSize="large" />
+                <MenuBookIcon
+                  className={classes.menuBookIcon}
+                  fontSize="large"
+                />
               </Link>
             </Typography>
             <div className={classes.nav__content}>
@@ -67,9 +70,9 @@ export default function LoginLayout(props) {
                 >
                   <Typography variant="h6">Главное</Typography>
                 </Link>
-                <Typography variant="h6">Книги</Typography>
-                <Typography variant="h6">Авторы</Typography>
-                <Typography variant="h6">Жанры</Typography>
+                {/* <Typography variant="h6">Книги</Typography> */}
+                {/* <Typography variant="h6">Авторы</Typography> */}
+                {/* <Typography variant="h6">Жанры</Typography> */}
               </div>
               <div className={classes.top__menu2}>
                 <SearchModal />

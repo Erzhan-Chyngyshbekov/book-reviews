@@ -8,6 +8,8 @@ const INIT_STATE = {
   categories: [],
   productDetail: null,
   // categoryDetail: null,
+  comments: [],
+  likes: 0,
 };
 
 const reducer = (state = INIT_STATE, action) => {
@@ -39,28 +41,32 @@ const reducer = (state = INIT_STATE, action) => {
         ...state,
         categories: action.payload,
       };
+    case "SET_COMMENTS":
+      return {
+        ...state,
+        comments: action.payload,
+      };
     case "CLEAR_PRODUCT":
       return {
         ...state,
         productDetail: null,
       };
     case "ADD_COMMENT":
-      console.log(action.payload);
       return {
         ...state,
-        productDetail: {
-          ...state.productDetail,
-          comments: [...state.productDetail.comments, action.payload],
-        },
+        comments: [...state.comments, action.payload],
       };
     case "DELETE_COMMENT":
-      console.log(action.payload);
       return {
         ...state,
-        productDetail: {
-          ...state.productDetail,
-          comments: action.payload,
-        },
+        comments: state.comments.filter(
+          (comment) => comment.id !== action.payload
+        ),
+      };
+    case "SET_LIKES":
+      return {
+        ...state,
+        likes: action.payload,
       };
     // case "SET_CATEGORY_DETAIL":
     //   return {
@@ -75,7 +81,12 @@ const reducer = (state = INIT_STATE, action) => {
 export const storeContext = React.createContext();
 const { REACT_APP_API_URL: URL } = process.env;
 
-const localURL = "http://localhost:8000";
+// const localURL = "http://localhost:8000";
+
+// axios.interceptors.request.use((config) => {
+//   config.headers.Authorization = `JWT ${localStorage.getItem("access_token")}`;
+//   return config;
+// });
 
 export default function StoreContextProvider(props) {
   const [state, dispatch] = useReducer(reducer, INIT_STATE);
@@ -83,9 +94,6 @@ export default function StoreContextProvider(props) {
   const fetchProducts = async () => {
     const response = await axios.get(`${URL}/api/v1/reviews/`);
     const products = response.data.results;
-    // const response = await axios.get(`${localURL}/products`);
-    // const products = response.data;
-    // console.log(products);
 
     dispatch({
       type: "SET_PRODUCTS",
@@ -95,7 +103,6 @@ export default function StoreContextProvider(props) {
 
   const fetchProductDetail = async (id) => {
     const response = await axios.get(`${URL}/api/v1/review/${id}`);
-    // const response = await axios.get(`${localURL}/products/${id}`);
     const productDetail = response.data;
 
     dispatch({
@@ -106,13 +113,22 @@ export default function StoreContextProvider(props) {
 
   const fetchCategories = async () => {
     const response = await axios.get(`${URL}/api/v1/categories/list/`);
-    // const response = await axios.get(`${localURL}/categories`);
     const categories = response.data;
-    // console.log(categories);
 
     dispatch({
       type: "SET_CATEGORIES",
       payload: categories,
+    });
+  };
+
+  const fetchComments = async (id) => {
+    const response = await axios.get(`${URL}/api/v1/review/${id}`);
+    const comments = response.data.comments;
+    console.log(comments);
+
+    dispatch({
+      type: "SET_COMMENTS",
+      payload: comments,
     });
   };
 
@@ -151,34 +167,59 @@ export default function StoreContextProvider(props) {
     });
   };
 
-  const addComment = async (id, body, owner) => {
+  const addComment = async (reviewId, body, owner) => {
+    // const user = localStorage.getItem("account");
+    // if (owner !== user) {
+    //   return;
+    // }
+    const response = await axiosInstance.post(`${URL}/api/v1/comments/`, {
+      body: body,
+      review: reviewId,
+    });
+    const comment = response.data;
+    console.log(comment);
+
     dispatch({
       type: "ADD_COMMENT",
-      payload: { id, body, owner },
-    });
-    axiosInstance.post(`${URL}/api/v1/comments/`, {
-      body: body,
-      review: id,
+      payload: comment,
     });
   };
 
-  const deleteComment = async (id, productId, owner) => {
+  const deleteComment = async (id, owner) => {
     console.log(id);
-    const user = localStorage.getItem("account");
+    const user = localStorage.getItem("user");
     if (owner !== user) {
       return;
     }
-    axiosInstance.delete(`${URL}/api/v1/comments/${id}`);
-
-    const comments = state.productDetail.comments.filter(
-      (item) => item.id !== id
-    );
-
-    console.log(comments);
-
+    await axiosInstance.delete(`${URL}/api/v1/comments/${id}`);
     dispatch({
       type: "DELETE_COMMENT",
-      payload: comments,
+      payload: id,
+    });
+  };
+
+  const fetchLikes = async (id) => {
+    const response = await axiosInstance.get(`${URL}/api/v1/review/${id}`);
+    const likes = response.data.like;
+
+    dispatch({
+      type: "SET_LIKES",
+      payload: likes,
+    });
+  };
+
+  const addLike = async (bookId) => {
+    await axiosInstance.post(`${URL}/api/v1/like/create/`, {
+      book: bookId,
+      like: true,
+    });
+
+    const response = await axiosInstance.get(`${URL}/api/v1/review/${bookId}`);
+    const likes = response.data.like;
+
+    dispatch({
+      type: "SET_LIKES",
+      payload: likes,
     });
   };
 
@@ -188,14 +229,19 @@ export default function StoreContextProvider(props) {
         products: state.products,
         categories: state.categories,
         productDetail: state.productDetail,
+        comments: state.comments,
+        likes: state.likes,
         fetchProducts,
         fetchProductDetail,
         fetchCategories,
+        fetchComments,
         createProduct,
         deleteProduct,
         updateProduct,
         addComment,
         deleteComment,
+        fetchLikes,
+        addLike,
       }}
     >
       {props.children}

@@ -1,7 +1,7 @@
 .burgerMenu {
   margin: auto 10px;
   transform: skewX(30deg);
-  /* display: none !important; */
+  display: none !important;
   color: #fff;
 }
 

@@ -48,7 +48,7 @@ export default function ProductCreatePage() {
     formData.append("review", values.review);
     formData.append("category", values.category);
     formData.append("image", values.image);
-    console.log(formData);
+    console.log(formData);  
 
     createProduct(formData).then((id) => {
       actions.resetForm();

@@ -10,6 +10,7 @@ import { notifySuccess } from "../../helpers/notifiers";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 import CreateIcon from "@material-ui/icons/Create";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 
 import CommentInput from "../../components/Comments/CommentList";
 import CommentList from "../../components/Comments/CommentInput";
@@ -20,9 +21,14 @@ export default function ProductDetailPage() {
   const {
     productDetail,
     fetchProductDetail,
+    comments,
+    likes,
+    fetchComments,
     deleteProduct,
     addComment,
     deleteComment,
+    fetchLikes,
+    addLike,
   } = useContext(storeContext);
 
   const [title, setTitle] = useState("");
@@ -30,10 +36,11 @@ export default function ProductDetailPage() {
   const handleCommentAdd = (e) => {
     e.preventDefault();
     addComment(productDetail.id, title, productDetail.owner);
+    setTitle("");
   };
 
   const handleDelete = (commentId, owner) => {
-    deleteComment(commentId, productDetail.id, owner);
+    deleteComment(commentId, owner);
   };
 
   const { id } = useParams();
@@ -41,6 +48,8 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     fetchProductDetail(id);
+    fetchComments(id);
+    fetchLikes(id);
   }, [id]);
 
   const handleProductDelete = () => {
@@ -48,6 +57,10 @@ export default function ProductDetailPage() {
       notifySuccess("Товар был успешно удален!");
       history.push("/");
     });
+  };
+
+  const handleLike = (productDetailId) => {
+    addLike(productDetailId);
   };
 
   return (
@@ -74,6 +87,10 @@ export default function ProductDetailPage() {
             <p onClick={() => history.push(`/products/${id}/update`)}>
               <CreateIcon /> Change
             </p>
+            <p>
+              <ThumbUpAltIcon onClick={() => handleLike(productDetail.id)} />
+              {likes}
+            </p>
           </div>
           <div className={classes.book_description}>
             <h3>Owner: {productDetail.owner}</h3>
@@ -84,7 +101,7 @@ export default function ProductDetailPage() {
 
           <form onSubmit={handleCommentAdd} className={classes.comments}>
             <div>
-              {productDetail.comments.map((comment, index) => (
+              {comments.map((comment) => (
                 <div className={classes.comment} key={comment.id}>
                   <p>{comment.body}</p>
                   <p>{comment.owner}</p>
@@ -97,6 +114,9 @@ export default function ProductDetailPage() {
             <input
               name="comment"
               onChange={(e) => setTitle(e.target.value)}
+              type="text"
+              required
+              value={title}
               // value={title}
             />
             <button>create</button>

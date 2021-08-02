@@ -4,6 +4,8 @@ import { useHistory } from "react-router-dom";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { makeStyles } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
+import { useContext } from "react";
+import { authContext } from "../../../Contexts/AuthContext";
 
 const useStyles = makeStyles({
   exitIcon: {
@@ -18,11 +20,13 @@ const useStyles = makeStyles({
 export default function Logout() {
   const classes = useStyles();
   const history = useHistory();
+  const { logout } = useContext(authContext);
 
   const handleLogout = () => {
+    logout();
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    localStorage.removeItem("account");
+    localStorage.removeItem("user");
     axiosInstance.defaults.headers["Authorization"] = null;
     history.push("/login");
   };

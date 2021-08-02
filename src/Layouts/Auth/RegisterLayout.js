@@ -1,4 +1,4 @@
-  import React from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -70,9 +70,9 @@ export default function LoginLayout(props) {
                 >
                   <Typography variant="h6">Главное</Typography>
                 </Link>
-                <Typography variant="h6">Книги</Typography>
-                <Typography variant="h6">Авторы</Typography>
-                <Typography variant="h6">Жанры</Typography>
+                {/* <Typography variant="h6">Книги</Typography> */}
+                {/* <Typography variant="h6">Авторы</Typography> */}
+                {/* <Typography variant="h6">Жанры</Typography> */}
               </div>
               <div className={classes.top__menu2}>
                 <SearchModal />
