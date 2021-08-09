@@ -16,7 +16,6 @@ const reducer = (state = INIT_STATE, action) => {
         users: action.payload,
       };
     case "SET_USER":
-      console.log(action.payload);
       return {
         ...state,
         user: action.payload,
@@ -36,7 +35,6 @@ export default function AuthContextProvider(props) {
   const fetchUsers = async () => {
     const response = await axios.get(`${URL}/api/v1/accounts/list/`);
     const users = response.data;
-    console.log(users);
 
     dispatch({
       type: "SET_USERS",
@@ -63,7 +61,6 @@ export default function AuthContextProvider(props) {
       "JWT " + localStorage.getItem("access_token");
 
     const user = response.data;
-    console.log(user);
 
     dispatch({
       type: "SET_USER",
@@ -78,6 +75,21 @@ export default function AuthContextProvider(props) {
     });
   };
 
+  const checkAuth = async () => {
+    const response = await axios.get(`${URL}/api/v1/accounts/list/`);
+    const users = response.data;
+    // console.log(users);
+
+    users.find((user) => {
+      if ((user.email = localStorage.getItem("user"))) {
+        dispatch({
+          type: "SET_USER",
+          payload: user,
+        });
+      }
+    });
+  };
+
   return (
     <authContext.Provider
       value={{
@@ -86,6 +98,7 @@ export default function AuthContextProvider(props) {
         login,
         fetchUsers,
         logout,
+        checkAuth,
       }}
     >
       {props.children}

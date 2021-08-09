@@ -37,18 +37,18 @@ export default function ItemsSlider({ products }) {
 
   return categories.map((category) => (
     <>
+      {/* {categories.filter(() =>
+        products.map((product) => product.category.name)
+      )} */}
+
       <h2 style={{ color: "#fff", height: 20 }}>{category.name}</h2>
       <Carousel responsive={responsive}>
-        {products.map((product) => {
-          if (category.name === product.category.name) {
-            return <Card key={product.id} data={product} />;
-          }
-        })}
+        {products
+          .filter((product) => category.name === product.category.name)
+          .map((product) => (
+            <Card key={product.id} data={product} />
+          ))}
       </Carousel>
     </>
   ));
 }
-
-// (
-//   <Card key={product.id} data={product} />
-// ))}

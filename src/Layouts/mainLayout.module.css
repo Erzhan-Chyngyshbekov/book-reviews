@@ -1,3 +1,10 @@
+.wrapper {
+  position: relative;
+  height: 100%;
+  min-height: 100vh;
+  padding-bottom: 217px;
+}
+
 .nav__content {
   margin-left: 15%;
   width: 100%;

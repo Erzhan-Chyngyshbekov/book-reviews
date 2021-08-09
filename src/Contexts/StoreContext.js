@@ -9,7 +9,10 @@ const INIT_STATE = {
   productDetail: null,
   // categoryDetail: null,
   comments: [],
+  allLikes: [],
   likes: 0,
+  favorites: [],
+  productDetailRating: null,
 };
 
 const reducer = (state = INIT_STATE, action) => {
@@ -63,10 +66,25 @@ const reducer = (state = INIT_STATE, action) => {
           (comment) => comment.id !== action.payload
         ),
       };
+    case "SET_ALL_LIKES":
+      return {
+        ...state,
+        allLikes: action.payload,
+      };
     case "SET_LIKES":
       return {
         ...state,
         likes: action.payload,
+      };
+    case "SET_FAVORITES":
+      return {
+        ...state,
+        favorites: action.payload,
+      };
+    case "SET_RATING":
+      return {
+        ...state,
+        productDetailRating: action.payload,
       };
     // case "SET_CATEGORY_DETAIL":
     //   return {
@@ -124,7 +142,7 @@ export default function StoreContextProvider(props) {
   const fetchComments = async (id) => {
     const response = await axios.get(`${URL}/api/v1/review/${id}`);
     const comments = response.data.comments;
-    console.log(comments);
+    // console.log(comments);
 
     dispatch({
       type: "SET_COMMENTS",
@@ -198,9 +216,21 @@ export default function StoreContextProvider(props) {
     });
   };
 
+  const fetchAllLikes = async () => {
+    const response = await axiosInstance.get(`${URL}/api/v1/like/`);
+    const allLikes = response.data;
+    console.log(allLikes);
+
+    dispatch({
+      type: "SET_ALL_LIKES",
+      payload: allLikes,
+    });
+  };
+
   const fetchLikes = async (id) => {
     const response = await axiosInstance.get(`${URL}/api/v1/review/${id}`);
     const likes = response.data.like;
+    // console.log(likes);
 
     dispatch({
       type: "SET_LIKES",
@@ -221,6 +251,103 @@ export default function StoreContextProvider(props) {
       type: "SET_LIKES",
       payload: likes,
     });
+
+    const allLikesResponse = await axiosInstance.get(`${URL}/api/v1/like/`);
+    const allLikes = allLikesResponse.data;
+    console.log(allLikes);
+
+    dispatch({
+      type: "SET_ALL_LIKES",
+      payload: allLikes,
+    });
+  };
+
+  const removeLike = async (id) => {
+    await axiosInstance.delete(`${URL}/api/v1/like/${id}/delete/`);
+
+    const allLikesResponse = await axiosInstance.get(`${URL}/api/v1/like/`);
+    const allLikes = allLikesResponse.data;
+    console.log(allLikes);
+
+    dispatch({
+      type: "SET_ALL_LIKES",
+      payload: allLikes,
+    });
+  };
+
+  const fetchRating = async (id) => {
+    const response = await axios.get(`${URL}/api/v1/review/${id}`);
+    const productDetailRating = response.data.mark.mark__avg;
+    // console.log(productDetailRating);
+
+    dispatch({
+      type: "SET_RATING",
+      payload: productDetailRating,
+    });
+  };
+
+  const addRating = async (id, rating) => {
+    const ratingResponse = await axiosInstance.post(
+      `${URL}/api/v1/rating/create/`,
+      {
+        book: id,
+        mark: rating,
+      }
+    );
+    console.log(ratingResponse.data);
+
+    const response = await axios.get(`${URL}/api/v1/review/${id}`);
+    const productDetailRating = response.data.mark.mark__avg;
+    // console.log(productDetailRating);
+
+    dispatch({
+      type: "SET_RATING",
+      payload: productDetailRating,
+    });
+  };
+
+  const fetchFavorites = async () => {
+    const response = await axiosInstance.get(`${URL}/api/v1/favorite/list/`);
+    const favorites = response.data;
+    // console.log(favorites);
+
+    dispatch({
+      type: "SET_FAVORITES",
+      payload: favorites,
+    });
+  };
+
+  const addFavorite = async (id) => {
+    const favoriteResponse = await axiosInstance.post(
+      `${URL}/api/v1/favorite/create/`,
+      {
+        review: id,
+        favorites: true,
+      }
+    );
+    console.log(favoriteResponse.data);
+
+    const response = await axiosInstance.get(`${URL}/api/v1/favorite/list/`);
+    const favorites = response.data;
+    console.log(favorites);
+
+    dispatch({
+      type: "SET_FAVORITES",
+      payload: favorites,
+    });
+  };
+
+  const removeFavorite = async (id) => {
+    await axiosInstance.delete(`${URL}/api/v1/favorite/${id}/delete/`);
+
+    const response = await axiosInstance.get(`${URL}/api/v1/favorite/list/`);
+    const favorites = response.data;
+    console.log(favorites);
+
+    dispatch({
+      type: "SET_FAVORITES",
+      payload: favorites,
+    });
   };
 
   return (
@@ -231,6 +358,9 @@ export default function StoreContextProvider(props) {
         productDetail: state.productDetail,
         comments: state.comments,
         likes: state.likes,
+        allLikes: state.allLikes,
+        favorites: state.favorites,
+        productDetailRating: state.productDetailRating,
         fetchProducts,
         fetchProductDetail,
         fetchCategories,
@@ -240,8 +370,15 @@ export default function StoreContextProvider(props) {
         updateProduct,
         addComment,
         deleteComment,
+        fetchAllLikes,
         fetchLikes,
         addLike,
+        removeLike,
+        fetchRating,
+        addRating,
+        fetchFavorites,
+        addFavorite,
+        removeFavorite,
       }}
     >
       {props.children}

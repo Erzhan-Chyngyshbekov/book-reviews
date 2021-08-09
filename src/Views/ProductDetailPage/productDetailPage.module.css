@@ -37,6 +37,7 @@
 .actions {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   max-width: 930px;
   margin: 0 auto;
 }
@@ -51,8 +52,16 @@
   margin: 10px;
 }
 
+.actions p:last-child {
+  font-size: 20px;
+}
+
 .actions p:hover {
   color: #fff;
+}
+
+.actions .icon {
+  margin-right: 5px;
 }
 
 .actions .bookmark_icon {
@@ -61,6 +70,18 @@
 
 .actions .delete_icon {
   font-size: 30px;
+}
+
+.liked_icon {
+  color: red;
+  margin-right: 5px;
+}
+
+.rating_icon {
+  /* color: #fff; */
+  padding: 5px;
+  background-color: #9c9aa3;
+  border-radius: 10px;
 }
 
 .book_description {

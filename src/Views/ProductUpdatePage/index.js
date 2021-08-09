@@ -24,6 +24,7 @@ export default function ProductUpdatePage() {
     useContext(storeContext);
 
   const { id } = useParams();
+
   useEffect(() => {
     fetchProductDetail(id);
   }, []);

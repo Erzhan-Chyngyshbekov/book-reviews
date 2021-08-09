@@ -17,6 +17,11 @@ export default function Card({ data }) {
         }}
       >
         <div className={classes.card__info}>
+          <p>
+            {data.mark.mark__avg === null
+              ? "no rating"
+              : `${data.mark.mark__avg} rating`}
+          </p>
           <p>{data.book_author}</p>
         </div>
       </div>

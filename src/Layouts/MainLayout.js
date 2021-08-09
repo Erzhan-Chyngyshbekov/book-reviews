@@ -15,7 +15,6 @@ import MenuRoundedIcon from "@material-ui/icons/MenuRounded";
 import MenuBar from "../components/MenuBar";
 import HeroSlider from "../components/HeroSlider";
 import Footer from "../components/Footer/Footer";
-import FooterSocial from "../components/FooterSocial/FooterSocial";
 import { Fab } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import Logout from "../components/Auth/Logout/logout";
@@ -48,8 +47,6 @@ ElevationScroll.propTypes = {
    */
   window: PropTypes.func,
 };
-const account = localStorage.getItem("account");
-
 // const accountCheck = () =>
 //   account ? (
 //     <Link to="/account">
@@ -70,89 +67,92 @@ const account = localStorage.getItem("account");
 // }, []);
 
 export default function MainLayout(props) {
-  const { user } = useContext(authContext);
+  const { user, checkAuth } = useContext(authContext);
 
   // useEffect(() => {
   //   fetchUser();
   // }, []);
 
-  const history = useHistory();
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   return (
     <React.Fragment>
-      <CssBaseline />
-      <ElevationScroll {...props}>
-        <AppBar style={{ backgroundColor: "#1f1b2e" }}>
-          <Toolbar>
-            <Typography className={classes.logo}>
-              <MenuBar className={classes.burgerMenu} />
-              <Link to="/">
-                <MenuBookIcon
-                  className={classes.menuBookIcon}
-                  fontSize="large"
-                />
-              </Link>
-            </Typography>
-            <div className={classes.nav__content}>
-              <div className={classes.top__menu}>
-                <Link className={classes.link_main} to="/">
-                  <Typography variant="h6">Главное</Typography>
+      <div className={classes.wrapper}>
+        <CssBaseline />
+        <ElevationScroll {...props}>
+          <AppBar style={{ backgroundColor: "#1f1b2e" }}>
+            <Toolbar>
+              <Typography className={classes.logo}>
+                <MenuBar className={classes.burgerMenu} />
+                <Link to="/">
+                  <MenuBookIcon
+                    className={classes.menuBookIcon}
+                    fontSize="large"
+                  />
                 </Link>
-                {/* <Typography variant="h6">Книги</Typography> */}
-                {/* <Typography variant="h6">Авторы</Typography> */}
-                {/* <Typography variant="h6">Жанры</Typography> */}
-                {/* <Typography variant="h6">Категории</Typography> */}
-                <Typography variant="h6">{user.email}</Typography>
-              </div>
-              <div className={classes.top__menu2}>
-                <SearchModal />
+              </Typography>
+              <div className={classes.nav__content}>
+                <div className={classes.top__menu}>
+                  <Link className={classes.link_main} to="/">
+                    <Typography variant="h6">Главное</Typography>
+                  </Link>
+                  {/* <Typography variant="h6">Книги</Typography> */}
+                  {/* <Typography variant="h6">Авторы</Typography> */}
+                  {/* <Typography variant="h6">Жанры</Typography> */}
+                  {/* <Typography variant="h6">Категории</Typography> */}
+                  <Typography variant="h6">{user.email}</Typography>
+                </div>
+                <div className={classes.top__menu2}>
+                  <SearchModal />
 
-                {user.email ? (
-                  <Link to="/account">
-                    <Tooltip title="account page">
-                      <AccountCircleOutlinedIcon
-                        className={classes.accountIcon}
-                      />
-                    </Tooltip>
-                  </Link>
-                ) : (
-                  <Link to="/login">
-                    <Tooltip title="Login">
-                      <AccountCircleOutlinedIcon
-                        className={classes.accountIcon}
-                      />
-                    </Tooltip>
-                  </Link>
-                )}
+                  {user.email ? (
+                    <Link to="/account">
+                      <Tooltip title="account page">
+                        <AccountCircleOutlinedIcon
+                          className={classes.accountIcon}
+                        />
+                      </Tooltip>
+                    </Link>
+                  ) : (
+                    <Link to="/login">
+                      <Tooltip title="Login">
+                        <AccountCircleOutlinedIcon
+                          className={classes.accountIcon}
+                        />
+                      </Tooltip>
+                    </Link>
+                  )}
 
-                {user.email ? (
-                  <Link to="/login">
-                    <Logout />
-                  </Link>
-                ) : (
-                  ""
-                )}
+                  {user.email ? (
+                    <Link to="/login">
+                      <Logout />
+                    </Link>
+                  ) : (
+                    ""
+                  )}
+                </div>
               </div>
-            </div>
-          </Toolbar>
-        </AppBar>
-      </ElevationScroll>
-      <Toolbar />
-      <main style={{ backgroundColor: "#0f0d19" }}>
-        <Link to="/products/create">
-          <Fab
-            // onClick={() => history.push("/products/create")}
-            style={{ position: "fixed", top: "50%", right: 15 }}
-            color="secondary"
-            aria-label="add"
-          >
-            <AddIcon />
-          </Fab>
-        </Link>
-        <Container>{props.children}</Container>
-      </main>
-      <Footer />
-      <FooterSocial />
+            </Toolbar>
+          </AppBar>
+        </ElevationScroll>
+        <Toolbar />
+        <main style={{ backgroundColor: "#0f0d19" }}>
+          <Link to="/products/create">
+            <Fab
+              // onClick={() => history.push("/products/create")}
+              style={{ position: "fixed", top: "50%", right: 15 }}
+              color="secondary"
+              aria-label="add"
+            >
+              <AddIcon />
+            </Fab>
+          </Link>
+          <Container>{props.children}</Container>
+        </main>
+        <Footer />
+      </div>
     </React.Fragment>
   );
 }
